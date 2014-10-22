@@ -1,0 +1,22 @@
+{
+    "name": "codeaken/sshkey",
+    "description": "Library for working with and generating SSH keys",
+    "keywords": ["ssh", "key", "generator", "rsa"],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Magnus Johansson",
+            "email": "magnus@codeaken.com"
+        }
+    ],
+    "require": {
+        "php": ">=5.4.0",
+        "phpseclib/phpseclib": "0.3.*"
+    },
+    "autoload": {
+        "psr-0": {
+            "Codeaken\\SshKey\\": "src/"
+        }
+    },
+    "minimum-stability": "stable"
+}
