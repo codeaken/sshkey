@@ -7,7 +7,9 @@ class SshPublicKey extends SshKey
     {
         parent::__construct();
 
-        $this->key->loadKey($keyData);
+        if ( ! $this->key->loadKey($keyData)) {
+            throw new Exception\LoadKeyException();
+        }
     }
 
     public static function fromFile($filename)
