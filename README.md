@@ -27,79 +27,88 @@ These examples makes the following assumptions:
 
 ### Read a key from a file
 
-    <?php
+```php
+<?php
 
-    // Read in the public and private keys
-    $publicKey = SshPublicKey::fromFile('id_rsa.pub');
-    $privateKey = SshPrivateKey::fromFile('id_rsa');
-    $encryptedPrivateKey = SshPrivateKey::fromFile('id_encrypted_rsa', 'abc123');
+// Read in the public and private keys
+$publicKey = SshPublicKey::fromFile('id_rsa.pub');
+$privateKey = SshPrivateKey::fromFile('id_rsa');
+$encryptedPrivateKey = SshPrivateKey::fromFile('id_encrypted_rsa', 'abc123');
 
-    // Try to read a key that does not exists; will throw a FileNotFoundException
-    try {
-        $missingKey = SshPublicKey::fromFile('nosuchkey.pub');
-    }
-    catch (Codeaken\SshKey\Exception\FileNotFoundException $e)
-    {
-        echo 'Could not find the key';
-    }
+// Try to read a key that does not exists; will throw a FileNotFoundException
+try {
+    $missingKey = SshPublicKey::fromFile('nosuchkey.pub');
+}
+catch (Codeaken\SshKey\Exception\FileNotFoundException $e)
+{
+    echo 'Could not find the key';
+}
 
-    // Try to read an encrypted private key using the wrong password; will throw a
-    // LoadKeyException
-    try {
-        $encryptedKey = SshPrivateKey::fromFile('id_encrypted_rsa', 'wrongpass');
-    }
-    catch (Codeaken\SshKey\Exception\LoadKeyException $e)
-    {
-        echo 'Could not decrypt the private key';
-    }
-
+// Try to read an encrypted private key using the wrong password; will throw a
+// LoadKeyException
+try {
+    $encryptedKey = SshPrivateKey::fromFile('id_encrypted_rsa', 'wrongpass');
+}
+catch (Codeaken\SshKey\Exception\LoadKeyException $e)
+{
+    echo 'Could not decrypt the private key';
+}
+```
 
 ### Read a key from a non file source
 
-    <?php
+```php
+<?php
 
-    // In this case we will read the key data from a file for simplicity but it
-    // could come from a database or some other source
+// In this case we will read the key data from a file for simplicity but it
+// could come from a database or some other source
 
-    $publicKeyData = file_get_contents('id_rsa.pub');
-    $publicKey = new SshPublicKey($publicKeyData);
+$publicKeyData = file_get_contents('id_rsa.pub');
+$publicKey = new SshPublicKey($publicKeyData);
 
-    $encryptedPrivateKeyData = file_get_contents('id_encrypted_rsa');
-    $privateKey = new SshPrivateKey($encryptedPrivateKeyData, 'abc123');
+$encryptedPrivateKeyData = file_get_contents('id_encrypted_rsa');
+$privateKey = new SshPrivateKey($encryptedPrivateKeyData, 'abc123');
+```
 
 ### Get a public keys fingerprint and comment
 
-    <?php
+```php
+<?php
 
-    $publicKey = SshPublicKey::fromFile('id_rsa.pub');
+$publicKey = SshPublicKey::fromFile('id_rsa.pub');
 
-    echo $publicKey->getFingerprint();
-    echo $publicKey->getComment();
+echo $publicKey->getFingerprint();
+echo $publicKey->getComment();
+```
 
 ### Generate a new keypair
 
-    <?php
+```php
+<?php
 
-    // 1024 bits and no passphrase
-    $keyPair1 = SshKeyPair::generate(1024);
+// 1024 bits and no passphrase
+$keyPair1 = SshKeyPair::generate(1024);
 
-    // 2048 bits and a passphrase of abc123
-    $keyPair2 = SshKeyPair::generate(2048, 'abc123');
+// 2048 bits and a passphrase of abc123
+$keyPair2 = SshKeyPair::generate(2048, 'abc123');
 
-    echo $keyPair2->getPrivateKey()->getKeyData(SshKey::FORMAT_PKCS8);
-    echo $keyPair2->getPublicKey()->getKeyData(SshKey::FORMAT_OPENSSH);
+echo $keyPair2->getPrivateKey()->getKeyData(SshKey::FORMAT_PKCS8);
+echo $keyPair2->getPublicKey()->getKeyData(SshKey::FORMAT_OPENSSH);
+```
 
 ### Save a key to a file
 
-    <?php
+```php
+<?php
 
-    $keyPair = SshKeyPair::generate();
+$keyPair = SshKeyPair::generate();
 
-    $publicKey  = $keyPair->getPublicKey();
-    $privateKey = $keyPair->getPrivateKey();
+$publicKey  = $keyPair->getPublicKey();
+$privateKey = $keyPair->getPrivateKey();
 
-    file_put_contents('id_new_rsa.pub', $publicKey->getKeyData(SshKey::FORMAT_OPENSSH));
-    file_put_contents('id_new_rsa', $privateKey->getKeyData(SshKey::FORMAT_PKCS8));
+file_put_contents('id_new_rsa.pub', $publicKey->getKeyData(SshKey::FORMAT_OPENSSH));
+file_put_contents('id_new_rsa', $privateKey->getKeyData(SshKey::FORMAT_PKCS8));
+```
 
 ## License
 SshKey is licensed under the [MIT License](http://opensource.org/licenses/MIT).
