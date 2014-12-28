@@ -131,6 +131,13 @@ class SshKeyTest extends \PHPUnit_Framework_TestCase
         );
     }
 
+    public function testPublicKeyComment()
+    {
+        $key = SshPublicKey::fromFile("{$this->keysDir}/id_nopass_rsa.pub");
+
+        $this->assertEquals('sshkey@test.com', $key->getComment());
+    }
+
     public function testCreateKeyPair()
     {
         $keyPair = SshKeyPair::generate();

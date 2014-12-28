@@ -24,6 +24,11 @@ class SshPublicKey extends SshKey
         return implode(':', str_split(md5(base64_decode($keyParts[1])), 2));
     }
 
+    public function getComment()
+    {
+        return trim($this->key->getComment());
+    }
+
     protected function getKeyType()
     {
         return 'public';
