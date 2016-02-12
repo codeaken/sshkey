@@ -1,6 +1,8 @@
 <?php
 namespace Codeaken\SshKey;
 
+use phpseclib\Crypt\RSA;
+
 class SshKeyPair
 {
     private $publicKey;
@@ -26,7 +28,7 @@ class SshKeyPair
     {
         $bits = (int)$bits;
 
-        $rsa = new \Crypt_RSA();
+        $rsa = new RSA();
 
         if ( ! empty($password)) {
             $rsa->setPassword($password);

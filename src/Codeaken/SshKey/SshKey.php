@@ -1,6 +1,8 @@
 <?php
 namespace Codeaken\SshKey;
 
+use phpseclib\Crypt\RSA;
+
 abstract class SshKey
 {
     protected $key;
@@ -11,15 +13,15 @@ abstract class SshKey
 
     public function __construct()
     {
-        $this->key = new \Crypt_RSA();
+        $this->key = new RSA();
     }
 
     public function getKeyData($format)
     {
         $formatToConstant = [
-            self::FORMAT_OPENSSH => CRYPT_RSA_PUBLIC_FORMAT_OPENSSH,
-            self::FORMAT_PKCS1   => CRYPT_RSA_PUBLIC_FORMAT_PKCS1,
-            self::FORMAT_PKCS8   => CRYPT_RSA_PUBLIC_FORMAT_PKCS8,
+            self::FORMAT_OPENSSH => RSA::PUBLIC_FORMAT_OPENSSH,
+            self::FORMAT_PKCS1   => RSA::PUBLIC_FORMAT_PKCS1,
+            self::FORMAT_PKCS8   => RSA::PUBLIC_FORMAT_PKCS8,
         ];
 
         if ( ! isset($formatToConstant[$format])) {
