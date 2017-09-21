@@ -164,4 +164,94 @@ class SshKeyTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($keyPair->getPrivateKey()->hasPassword());
         $this->assertEquals('abc123', $keyPair->getPrivateKey()->getPassword());
     }
+
+    public function testGetPublicKeyFromPrivateKey()
+    {
+        $expectedPublicKeyContents = file_get_contents("{$this->keysDir}/id_nopass_generated_comment_rsa.pub");
+
+        $privateKeyContents = file_get_contents("{$this->keysDir}/id_nopass_rsa");
+        $privateKey = new SshPrivateKey($privateKeyContents);
+        $publicKey = $privateKey->getPublicKey();
+
+        $this->assertEquals($expectedPublicKeyContents, $publicKey->getKeyData());
+    }
+
+    public function testSetCommentOnPublicKey()
+    {
+        $key = SshPublicKey::fromFile("{$this->keysDir}/id_nopass_generated_comment_rsa.pub");
+
+        $key->setComment('new comment');
+        $this->assertEquals('new comment', $key->getComment());
+    }
+
+    public function testSetCommentInConstructor()
+    {
+        $keyData = file_get_contents("{$this->keysDir}/id_nopass_generated_comment_rsa.pub");
+
+        $key = new SshPublicKey($keyData, 'new comment');
+
+        $this->assertEquals('new comment', $key->getComment());
+
+    }
+
+    public function testCreatePublicKeyFromPrivateKey()
+    {
+        $expectedPublicKeyContents = file_get_contents("{$this->keysDir}/id_nopass_generated_comment_rsa.pub");
+
+        $privateKeyContents = file_get_contents("{$this->keysDir}/id_nopass_rsa");
+        $privateKey = new SshPrivateKey($privateKeyContents);
+
+        $publicKey = SshPublicKey::fromPrivateKey($privateKey);
+
+        $this->assertEquals($expectedPublicKeyContents, $publicKey->getKeyData());
+    }
+
+    public function testPrivateKeyGetSize()
+    {
+        $keyPair = SshKeyPair::generate(2048);
+
+        $actualSize = $keyPair->getPrivateKey()->getSize();
+
+        $this->assertEquals(2048, $actualSize);
+    }
+
+    public function testPublicKeyGetSize()
+    {
+        $keyPair = SshKeyPair::generate(2048);
+
+        $actualSize = $keyPair->getPublicKey()->getSize();
+
+        $this->assertEquals(2048, $actualSize);
+    }
+
+    public function testKeyPairFromPrivateKeyFile()
+    {
+        $keyPair = SshKeyPair::fromFile("{$this->keysDir}/id_nopass_rsa");
+
+        $this->assertInstanceOf('Codeaken\SshKey\SshKeyPair', $keyPair);
+
+        $expectedPrivateKeyData = file_get_contents("{$this->keysDir}/id_nopass_rsa");
+        $actualPrivateKeyData = $keyPair->getPrivateKey()->getKeyData();
+        $this->assertEquals($expectedPrivateKeyData, $actualPrivateKeyData);
+
+        $expectedPublicKeyData =  file_get_contents("{$this->keysDir}/id_nopass_generated_comment_rsa.pub");
+        $actualPublicKeyData = $keyPair->getPublicKey()->getKeyData();
+        $this->assertEquals($expectedPublicKeyData, $actualPublicKeyData);
+    }
+
+    public function testKeyPairFromPublicKeyFile()
+    {
+        $this->setExpectedException('Codeaken\SshKey\Exception\InvalidKeyTypeException');
+        SshKeyPair::fromFile("{$this->keysDir}/id_nopass_rsa.pub");
+    }
+
+    public function testGetPuttyKeyFormat()
+    {
+        $key = SshPrivateKey::fromFile("{$this->keysDir}/id_nopass_rsa");
+
+        $actualKeyData = $key->getKeyData(SshKey::FORMAT_PUTTY);
+        $expectedKeyData = file_get_contents("{$this->keysDir}/id_nopass_rsa.ppk");
+
+        $this->assertEquals($expectedKeyData, $actualKeyData);
+    }
 }

@@ -20,6 +20,13 @@ class SshPrivateKey extends SshKey
         }
     }
 
+    public function getPublicKey($format = self::FORMAT_OPENSSH)
+    {
+        $keyData = $this->key->getPublicKey($this->formatToConstant[$format]);
+
+        return new SshPublicKey($keyData);
+    }
+
     public static function fromFile($filename, $password = '')
     {
         return new SshPrivateKey(SshKey::readFile($filename), $password);

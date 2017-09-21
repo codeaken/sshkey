@@ -10,29 +10,42 @@ abstract class SshKey
     const FORMAT_OPENSSH = 'openssh';
     const FORMAT_PKCS1   = 'pkcs1';
     const FORMAT_PKCS8   = 'pkcs8';
+    const FORMAT_PUTTY   = 'putty';
+
+    protected $formatToConstant = [
+        self::FORMAT_OPENSSH => RSA::PUBLIC_FORMAT_OPENSSH,
+        self::FORMAT_PKCS1   => RSA::PUBLIC_FORMAT_PKCS1,
+        self::FORMAT_PKCS8   => RSA::PUBLIC_FORMAT_PKCS8,
+        self::FORMAT_PUTTY   => RSA::PRIVATE_FORMAT_PUTTY,
+    ];
 
     public function __construct()
     {
         $this->key = new RSA();
     }
 
-    public function getKeyData($format)
+    public function getKeyData($format = self::FORMAT_OPENSSH)
     {
-        $formatToConstant = [
-            self::FORMAT_OPENSSH => RSA::PUBLIC_FORMAT_OPENSSH,
-            self::FORMAT_PKCS1   => RSA::PUBLIC_FORMAT_PKCS1,
-            self::FORMAT_PKCS8   => RSA::PUBLIC_FORMAT_PKCS8,
-        ];
-
-        if ( ! isset($formatToConstant[$format])) {
+        if ( ! isset($this->formatToConstant[$format])) {
             throw new \DomainException("Invalid format: $format");
         }
 
         if ('private' == $this->getKeyType()) {
-            return $this->key->getPrivateKey($formatToConstant[$format]);
+            $keyData =  $this->key->getPrivateKey($this->formatToConstant[$format]);
         } else {
-            return $this->key->getPublicKey($formatToConstant[$format]);
+            $keyData = $this->key->getPublicKey($this->formatToConstant[$format]);
         }
+
+        if ($format != self::FORMAT_PUTTY) {
+            $keyData = $this->normalizeLineEndings($keyData);
+        }
+
+        return $keyData;
+    }
+
+    public function getSize()
+    {
+        return $this->key->getSize();
     }
 
     abstract protected function getKeyType();
@@ -50,5 +63,10 @@ abstract class SshKey
         }
 
         return $fileData;
+    }
+
+    protected function normalizeLineEndings($data)
+    {
+        return str_replace("\r\n", "\n", $data);
     }
 }
