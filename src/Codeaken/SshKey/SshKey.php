@@ -10,7 +10,9 @@ abstract class SshKey
     const FORMAT_OPENSSH = 'openssh';
     const FORMAT_PKCS1   = 'pkcs1';
     const FORMAT_PKCS8   = 'pkcs8';
-
+    const PRIVATE_FORMAT_PUTTY = 'puttyprivatekey'; // FOR GENERATING PUTTY FORMATED PRIVATE KEY
+    const PUBLIC_FORMAT_OPENSSH = 'puttypublickey'; // FOR MATHCING THE PUBLIC KEY WITH PUTTY FORMATED PRIVATE KEY
+    
     public function __construct()
     {
         $this->key = new RSA();
@@ -22,6 +24,8 @@ abstract class SshKey
             self::FORMAT_OPENSSH => RSA::PUBLIC_FORMAT_OPENSSH,
             self::FORMAT_PKCS1   => RSA::PUBLIC_FORMAT_PKCS1,
             self::FORMAT_PKCS8   => RSA::PUBLIC_FORMAT_PKCS8,
+            self::PRIVATE_FORMAT_PUTTY => RSA::PRIVATE_FORMAT_PUTTY,
+            self::PUBLIC_FORMAT_OPENSSH => RSA::PUBLIC_FORMAT_OPENSSH,            
         ];
 
         if ( ! isset($formatToConstant[$format])) {
